@@ -1,0 +1,15 @@
+# Streamlit settings for the A1C dashboard.
+[browser]
+# Do not send usage statistics to Streamlit.
+gatherUsageStats = false
+
+[server]
+# Listen on this computer only. Other people see the dashboard through a screen share.
+address = "localhost"
+port = 8501
+# Largest export upload in MB.
+maxUploadSize = 200
+
+[theme]
+# The chart colors were checked on a light background.
+base = "light"
