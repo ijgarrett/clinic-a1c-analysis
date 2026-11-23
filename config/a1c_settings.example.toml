@@ -1,0 +1,97 @@
+# A1C outcome settings (example)
+#
+# To use: copy this file to config/a1c_settings.toml and change the values.
+# The dashboard and a1c_report.py read config/a1c_settings.toml if it exists,
+# and this example file if it does not.
+#
+# Values listed under [provisional] at the end still need clinic approval.
+# Reports show them as PROVISIONAL. When the clinic approves a value,
+# remove its key from that list.
+
+[data]
+# Path to the eBO 5.02a "Lab Results Analysis Report" CSV export.
+input_file = "data/5.02a - Lab Results Analysis Report.csv"
+# Lab Attribute names that are A1C. The match is exact but ignores upper/lower case,
+# so "Hemoglobin A1c" also matches "Hemoglobin A1C". Do not add "Hemoglobin" (CBC)
+# or "Est. Average Glucose" (calculated from the A1C).
+a1c_labels = ["Hemoglobin A1c"]
+# Column names after cleanup (lower case, spaces become "_"). Change only if eBO renames them.
+id_column = "patient_acct_no"
+date_column = "order_collection_performed_date"
+attribute_column = "lab_attribute"
+value_column = "lab_attribute_value"
+order_name_column = "order_name"
+order_status_column = "order_status"
+# The export has no unit column. Ask the clinic to confirm the unit, then set true.
+assumed_units = "percent (NGSP)"
+units_confirmed_by_clinic = false
+
+[window]
+# Reporting window. Both dates are included. Use "auto" for the first or last A1C date in the export.
+start = 2023-01-01
+end = 2026-11-14
+# "first_in_window": baseline = first valid A1C inside the window (default).
+# "pre_window": baseline = latest valid A1C in the lookback period before the window.
+baseline = "first_in_window"
+lookback_days = 365
+
+[cohort]
+# "lab_subgroup": patients whose baseline A1C is at or above subgroup_min_baseline.
+#                 This is a lab-based group, not a confirmed diabetes diagnosis.
+# "all_tested":   every patient with a baseline A1C.
+mode = "lab_subgroup"
+subgroup_min_baseline = 6.5
+# Optional CSV of eligible patients (for example a diabetes registry from the clinic).
+# Leave empty if there is no roster.
+roster_file = ""
+roster_id_column = "patient_id"
+
+[outcomes]
+# Control: "<" means below the threshold; "<=" means at or below it.
+control_threshold = 7.0
+control_operator = "<"
+# Change of more than this many percentage points counts as improved or worsened.
+# A change of exactly this size counts as stable.
+stability_tolerance = 0.5
+# Baseline groups: below 5.7, 5.7 to below 6.5, 6.5 to below 8, 8 to below 10, 10 or higher.
+baseline_group_cutpoints = [5.7, 6.5, 8.0, 10.0]
+# Do not show a percentage when its group has fewer paired patients than this.
+min_denominator = 10
+# The time-to-event curve stops when fewer than this many patients are still followed.
+km_min_at_risk = 10
+km_checkpoints = [180, 365]
+
+[quality]
+# Keep one copy when the same patient has the same value twice on the same date.
+collapse_identical_same_day = true
+# Values outside this range are kept but listed for review.
+review_low = 4.0
+review_high = 15.0
+# Source row numbers refer to ONE export file. They change with each new export.
+# approved_keep_rows: for a conflicting same-day group, the one row the clinic says to keep.
+approved_keep_rows = []
+# excluded_source_rows: rows the clinic approved to exclude. A reason is required.
+excluded_source_rows = []
+exclusion_reason = ""
+
+[disclosure]
+# Shareable outputs hide patient counts from 1 to (min_cell_size - 1).
+# This is a provisional rule until the clinic gives its own rule.
+min_cell_size = 11
+rule_confirmed_by_clinic = false
+
+[provisional]
+settings = [
+  "data.units_confirmed_by_clinic",
+  "window.start",
+  "window.end",
+  "window.baseline",
+  "cohort.subgroup_min_baseline",
+  "outcomes.control_threshold",
+  "outcomes.control_operator",
+  "outcomes.stability_tolerance",
+  "outcomes.baseline_group_cutpoints",
+  "quality.review_low",
+  "quality.review_high",
+  "disclosure.min_cell_size",
+]

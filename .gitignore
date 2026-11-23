@@ -8,3 +8,12 @@ __pycache__/
 *.xlsx
 *.xls
 .env
+
+# A1C dashboard project
+.venv-wsl/
+.pytest_cache/
+demo_data/
+config/a1c_settings.toml
+PRIVATE_*
+# Review briefs contain clinic aggregate counts. Keep them out of the repository.
+docs/review_brief_*.md
